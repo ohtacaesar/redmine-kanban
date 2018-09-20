@@ -7,15 +7,18 @@ services:
       args:
         ALPINE_SERVER: 192.168.11.200
         NPM_PROXY: http://192.168.11.200:8080/
+    environment:
+      REDMINE_API_KEY: ${REDMINE_API_KEY}
+
     ports:
     - 8080:3000
     volumes:
     - ./:/app
 
-  redimne:
+  redmine:
     image: redmine:3
     ports:
-    - 8081:3000
+    - 8888:3000
     environment:
       REDMINE_DB_MYSQL: mysql
       REDMINE_DB_PASSWORD: root

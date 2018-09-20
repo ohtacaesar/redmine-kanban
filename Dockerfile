@@ -7,7 +7,6 @@ ARG NPM_PROXY=""
 WORKDIR /app
 
 COPY package.json /app
-COPY app.js /app
 
 RUN set -eux \
     &&  if [[ -n "${ALPINE_SERVER}" ]]; then \
@@ -15,5 +14,7 @@ RUN set -eux \
         fi \
     &&  apk add --no-cache nodejs-npm \
     &&  npm install
+
+COPY app.js /app
 
 CMD ["node", "app.js"]
