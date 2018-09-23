@@ -9,24 +9,32 @@ services:
         NPM_PROXY: http://192.168.11.200:8080/
     environment:
       REDMINE_API_KEY: ${REDMINE_API_KEY}
-
     ports:
-    - 8080:3000
+      - 8080:3000
     volumes:
-    - ./:/app
+      - ./:/app
+    depends_on:
+      - mysql_kanban
+
+  mysql_kanban:
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: kanban
 
   redmine:
     image: redmine:3
     ports:
-    - 8888:3000
+      - 8888:3000
     environment:
-      REDMINE_DB_MYSQL: mysql
+      REDMINE_DB_MYSQL: mysql_redmine
       REDMINE_DB_PASSWORD: root
       REDMINE_DB_ENCODING: utf8mb4
     depends_on:
-    - mysql
+      - mysql_redmine
 
-  mysql:
+  mysql_redmine:
     image: mysql:5.7
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
     environment:
