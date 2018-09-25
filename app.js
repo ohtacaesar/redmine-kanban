@@ -38,25 +38,22 @@ app.get('/', function (req, res) {
 
 app.post('/sync', function (req, res) {
   axios.get('/issues.json').then(function (response) {
-
-    const issues = response.data.issues.map(function (issue) {
+    return response.data.issues.map(function (issue) {
       return [issue['id'], issue['subject'], issue['description']];
     });
-
+  }).then(function (issues) {
     connection.query(
         'replace into issues(issue_id, subject, description) values ?',
         [issues],
         function (error, results, fields) {
-          console.log(error);
           console.log(results);
-          console.log(fields);
         }
     );
-  }).catch(function (e) {
-    console.log(e);
   }).then(function () {
     res.redirect('/');
-  });
+  }).catch(function (e) {
+    console.log(e);
+  })
 });
 
 app.get('/issues', function (req, res) {
