@@ -31,6 +31,8 @@ create table if not exists issues (
 )
 `);
 
+app.use(express.static('public'));
+
 app.get('/', function (req, res) {
   res.send(
       '<!doctype html><html><body><a href="/issues">issues</a><form action="/sync" method="POST"><button type="submit">SYNC</button></form></body></html>');
