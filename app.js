@@ -22,7 +22,7 @@ const connection = mysql.createConnection({
 });
 
 connection.query(`
-create table issues (
+create table if not exists issues (
   issue_id int not null
 , subject varchar(255) not null
 , description text not null
@@ -39,38 +39,29 @@ app.get('/', function (req, res) {
 app.post('/sync', function (req, res) {
   axios.get('/issues.json').then(function (response) {
 
-    const issues = response.data.issues;
-    for (let i = 0, l = issues.length; i < l; i++) {
-      const issue = issues[i];
+    const issues = response.data.issues.map(function (issue) {
+      return [issue['id'], issue['subject'], issue['description']];
+    });
 
-      connection.query(
-          'replace into issues(issue_id, subject, description) values(?)',
-          {
-            'issue_id': issue['id'],
-            'subject': issue['subject'],
-            'description': issue['description'],
-          },
-          function (error, results, fields) {
-            console.log(error);
-            console.log(results);
-            console.log(fields);
-          }
-      );
-
-    }
-
-    res.redirect('/');
+    connection.query(
+        'replace into issues(issue_id, subject, description) values ?',
+        [issues],
+        function (error, results, fields) {
+          console.log(error);
+          console.log(results);
+          console.log(fields);
+        }
+    );
   }).catch(function (e) {
     console.log(e);
+  }).then(function () {
+    res.redirect('/');
   });
 });
 
 app.get('/issues', function (req, res) {
-  axios.get('/issues.json').then(function (response) {
-    const issues = response.data.issues;
-    res.json(issues);
-  }).catch(function (e) {
-    console.log(e);
+  connection.query('select * from issues', function (e, results, fields) {
+    res.json(results);
   });
 });
 
