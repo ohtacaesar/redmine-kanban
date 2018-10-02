@@ -33,28 +33,26 @@ create table if not exists issues (
 
 app.use(express.static('public'));
 
-app.get('/', function (req, res) {
-  res.send(
-      '<!doctype html><html><body><a href="/issues">issues</a><form action="/sync" method="POST"><button type="submit">SYNC</button></form></body></html>');
-});
-
 app.post('/sync', function (req, res) {
-  axios.get('/issues.json').then(function (response) {
+  axios.get('/issues.json')
+  .catch(function (e) {
+    console.log(e);
+    res.status(400).send('');
+  })
+  .then(function (response) {
     return response.data.issues.map(function (issue) {
       return [issue['id'], issue['subject'], issue['description']];
     });
-  }).then(function (issues) {
+  })
+  .then(function (issues) {
     connection.query(
         'replace into issues(issue_id, subject, description) values ?',
         [issues],
         function (error, results, fields) {
           console.log(results);
+          res.status(200).send('');
         }
     );
-  }).then(function () {
-    res.redirect('/');
-  }).catch(function (e) {
-    console.log(e);
   })
 });
 

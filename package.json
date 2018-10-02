@@ -17,7 +17,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack"
+    "webpack": "webpack",
+    "webpackw": "webpack -w --watch-poll"
   },
   "repository": {
     "type": "git",
