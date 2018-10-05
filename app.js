@@ -36,8 +36,7 @@ app.use(express.static('public'));
 app.post('/sync', function (req, res) {
   axios.get('/issues.json')
   .catch(function (e) {
-    console.log(e);
-    res.status(400).send('');
+    res.status(400).send();
   })
   .then(function (response) {
     return response.data.issues.map(function (issue) {
@@ -49,8 +48,7 @@ app.post('/sync', function (req, res) {
         'replace into issues(issue_id, subject, description) values ?',
         [issues],
         function (error, results, fields) {
-          console.log(results);
-          res.status(200).send('');
+          res.status(200).send();
         }
     );
   })
